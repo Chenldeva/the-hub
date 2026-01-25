@@ -1,8 +1,8 @@
 # Integration Server 工程事实冻结清单
 
 > **状态**：已冻结（除标注为"待确认"的项外）  
-> **冻结日期**：2024-12-XX  
-> **版本**：v1.0  
+> **冻结日期**：2026-01-24  
+> **版本**：v1.1  
 > **说明**：本文档作为后续开发的唯一事实来源（Source of Truth）。如需变更，必须更新本文档。
 
 ---
@@ -72,6 +72,7 @@
 | 项 | 状态 | 结论 |
 |---|---|---|
 | Store 路由 | ✅ 已冻结 | 是（不同 marketplace → 不同 Store） |
+| 认证方式 | ✅ 已冻结 | API Key + API Secret（已持有） |
 | Webhook 状态 | ✅ 已冻结 | 否（需要配置） |
 | Payload 定位键 | ✅ 已冻结 | `orderNumber`（创建订单时 orderNumber = external_order_id） |
 | Custom fields 支持 | ✅ 已冻结 | 是（允许写入 `customField1` = `external_order_id`） |
@@ -102,6 +103,17 @@
 | 小库存规则 | ✅ 已冻结 | 是（启用）<br>- `min_publish_qty = 0`（不限制） |
 | 小库存主渠道规则 | ✅ 已冻结 | 否（MVP 阶段不需要） |
 | Rounding 规则 | ✅ 已冻结 | `floor`（向下取整）<br>计算公式：`publish_qty = floor(alloc_base * ratio)` |
+
+### 影子库存与再平衡（已冻结）
+
+- **影子库存扣减触发**：以 marketplace 订单为触发（拉单或 webhook），立即扣减本地影子库存。
+- **超卖保护**：影子库存为 0 时，下发 0 或最小库存，并**通知用户**。
+- **再平衡触发**：低阈值触发 + 定时兜底（阈值与周期已冻结）。
+- **再平衡策略**：按当前影子库存重新执行比例分配。
+- **有效期**：影子库存有效期到下一次 Zoho 同步为止。
+- **边界原则**：Zoho 仍为库存真相源（SoT），影子库存不回写 Zoho。
+- **低阈值触发值**：`low_stock_threshold = 1`
+- **定时兜底周期**：`rebalance_interval = 240 分钟`
 
 **库存计算公式**：
 ```
@@ -155,6 +167,9 @@ publish_qty[m] = floor(alloc_base * ratio[m])
 
 5. **Zoho Inventory**：
    - [ ] API rate limit 和批量更新限制？
+6. **影子库存再平衡**：
+   - [x] 低阈值触发的具体阈值（low_stock_threshold = 1）
+   - [x] 定时兜底的周期（rebalance_interval = 240 分钟）
 
 ---
 
@@ -163,6 +178,8 @@ publish_qty[m] = floor(alloc_base * ratio[m])
 | 日期 | 版本 | 变更内容 | 变更人 |
 |---|---|---|---|
 | 2024-12-XX | v1.0 | 初始冻结 | - |
+| 2026-01-24 | v1.1 | 增加 ShipStation 认证方式与影子库存再平衡规则 | - |
+| 2026-01-24 | v1.2 | 冻结影子库存阈值与再平衡周期 | - |
 
 ---
 

@@ -1,8 +1,8 @@
 # Integration Server API 接口契约
 
 > **状态**：已冻结（基于工程事实清单）  
-> **冻结日期**：2024-12-XX  
-> **版本**：v1.0  
+> **冻结日期**：2026-01-24  
+> **版本**：v1.2  
 > **说明**：本文档定义 Integration Server 与外部系统的接口契约，包括数据格式、字段映射、调用方式等。
 
 ---
@@ -349,6 +349,12 @@ PUT /api/products/{product_id}/offers
 
 ## 三、ShipStation 接口契约
 
+### 3.0 认证
+
+**方式**：API Key + API Secret（Basic Auth）  
+**状态**：已持有凭证  
+**Base URL**：`https://ssapi.shipstation.com`
+
 ### 3.1 订单创建
 
 **接口**：
@@ -565,10 +571,11 @@ publish_qty[m] = floor(alloc_base * ratio[m])
 
 **流程**：
 1. 从 Zoho 获取库存快照（webhook 或全量同步）
-2. 计算 `alloc_base`
-3. 对每个 marketplace 计算 `publish_qty`
-4. 调用对应 marketplace API 更新库存
-5. 记录发布值（避免重复发布同值）
+2. 如果影子库存保护启用：使用 shadow_available 覆盖 available
+3. 计算 `alloc_base`
+4. 对每个 marketplace 计算 `publish_qty`
+5. 调用对应 marketplace API 更新库存
+6. 记录发布值（避免重复发布同值）
 
 ---
 
@@ -584,6 +591,24 @@ publish_qty[m] = floor(alloc_base * ratio[m])
 4. 如果 `missing.length > 阈值`：
    - 自动补拉/补创建（可配置开关）
    - 立即告警（Email + SMS）
+
+---
+
+### 5.5 影子库存与再平衡流程
+
+**目的**：在两次 Zoho 同步之间，基于订单实时扣减影子库存，降低非工作日 oversell 或 miss sale 风险。  
+**边界**：Zoho 为库存真相源（SoT），影子库存不回写 Zoho。
+
+**触发与处理**：
+1. **订单触发扣减**：当 marketplace 订单进入 Hub，立即扣减影子库存。
+2. **低库存保护**：当影子库存为 0 时，下发 0 或最小库存，并通知用户。
+3. **再平衡触发**：低阈值触发 + 定时兜底（阈值与周期为可配置项）。
+4. **再平衡策略**：按当前影子库存重新执行比例分配。
+5. **有效期**：影子库存有效期到下一次 Zoho 同步为止。
+
+**关键配置**：
+- `low_stock_threshold = 1`
+- `rebalance_interval = 240 分钟`
 
 ---
 
@@ -675,6 +700,8 @@ CREATE TABLE inventory_publications (
 | 日期 | 版本 | 变更内容 | 变更人 |
 |---|---|---|---|
 | 2024-12-XX | v1.0 | 初始冻结 | - |
+| 2026-01-24 | v1.1 | 增加 ShipStation 认证方式与影子库存流程 | - |
+| 2026-01-24 | v1.2 | 冻结影子库存阈值与再平衡周期 | - |
 
 ---
 
