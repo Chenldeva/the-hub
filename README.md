@@ -212,18 +212,60 @@ npm run seed
 
 ### DigitalOcean 部署
 
-1. 创建 DigitalOcean Droplet
-2. 安装 Node.js 20.x
-3. 安装 PostgreSQL
-4. 配置环境变量
-5. 运行数据库迁移和种子
-6. 使用 PM2 启动服务：
+详细的部署指南请参考 [deploy/digitalocean-deployment.md](./deploy/digitalocean-deployment.md)
+
+#### 快速部署步骤
+
+1. **准备服务器**：运行 `deploy/setup-server.sh` 初始化服务器
+2. **上传代码**：将代码上传到 `/var/www/the-hub`
+3. **配置环境变量**：复制 `deploy/env.production.template` 为 `.env` 并填写配置
+4. **安装依赖并构建**：`npm install && npm run build`
+5. **运行数据库迁移和种子**：`npm run migrate && npm run seed`
+6. **启动服务**：使用 PM2 启动服务
 
 ```bash
+# 使用 ecosystem.config.js 启动（推荐）
+pm2 start ecosystem.config.js
+
+# 或直接启动
 pm2 start dist/index.js --name the-hub
+
+# 保存配置并设置开机自启
 pm2 save
 pm2 startup
 ```
+
+#### 验证部署
+
+```bash
+# 检查服务状态
+pm2 status
+pm2 logs the-hub
+
+# 测试健康检查端点
+curl http://localhost:3000/health
+
+# 测试监控指标端点
+curl http://localhost:3000/metrics
+curl http://localhost:3000/metrics/json
+```
+
+#### 配置 Nginx 反向代理（推荐）
+
+参考 `deploy/nginx.conf.example` 配置 Nginx 反向代理。
+
+#### 环境变量配置
+
+生产环境变量配置模板：`deploy/env.production.template`
+
+**重要环境变量**：
+- `DATABASE_URL` 或 `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD` - 数据库连接
+- `WEBHOOK_BASE_URL` - Webhook 基础 URL（必须是公网可访问的完整 URL）
+- `SHIPSTATION_API_KEY` / `SHIPSTATION_API_SECRET` / `SHIPSTATION_WEBHOOK_SECRET` - ShipStation 配置
+- `AMAZON_SP_API_*` - Amazon SP-API 配置
+- `ZOHO_*` - Zoho Inventory 配置
+
+完整的环境变量列表请参考 `deploy/env.production.template`。
 
 ## 许可证
 

@@ -6,6 +6,219 @@
 
 ## 更新日志
 
+### 2026-01-24 - M0.1 DigitalOcean 部署进行中
+
+**任务**：执行 DigitalOcean 部署流程
+
+**已完成步骤**：
+
+1. ✅ **创建 Managed PostgreSQL 数据库**
+   - 数据库名称：`central-db`
+   - 版本：PostgreSQL 18
+   - 区域：与 Droplet 相同区域
+   - 计划：Basic（1 vCPU）
+   - 连接信息已记录：
+     - Host: `central-db-do-user-31680664-0.d.db.ondigitalocean.com`
+     - Port: `25060`
+     - Database: `defaultdb`
+     - User: `doadmin`
+     - Password: `AVNS__omlnJXyfrxllO9oZ1z`
+     - SSL Mode: `require`
+   - Trusted Sources 已配置：已添加 Droplet IP `143.198.110.147`
+   - 网络配置：Public Network（已确认，适合当前阶段）
+
+2. ✅ **创建 DigitalOcean Droplet**
+   - 主机名：`the-hub`
+   - IP 地址：`143.198.110.147`
+   - 镜像：Ubuntu 22.04 LTS
+   - 计划：Basic（1 GB RAM / 1 vCPU）
+   - 区域：与数据库相同区域
+   - 认证方式：已配置
+
+3. ✅ **配置服务器环境**
+   - 运行服务器初始化脚本 `setup-server.sh`
+   - 系统更新完成
+   - Node.js 20.x 已安装
+   - PM2 已安装
+   - PostgreSQL 客户端已安装
+   - Git 已安装
+   - Nginx：已跳过（稍后需要时再安装）
+   - 防火墙规则已添加（22, 80, 443 端口）
+   - 应用目录已创建：`/var/www/the-hub`
+
+**当前进度**：
+- 阶段：准备上传代码到服务器
+- 下一步：上传代码到 `/var/www/the-hub`
+
+**待完成步骤**：
+1. ⏳ 上传代码到服务器（使用 rsync 或 SCP）
+2. ⏳ 配置环境变量（创建 `.env` 文件，填写数据库连接、API keys 等）
+3. ⏳ 安装依赖并构建项目（`npm install`, `npm run build`）
+4. ⏳ 运行数据库迁移和种子（`npm run migrate`, `npm run seed`）
+5. ⏳ 使用 PM2 启动服务
+6. ⏳ 配置 Nginx 反向代理（可选）
+7. ⏳ 配置 SSL 证书（可选）
+8. ⏳ 验证部署（健康检查、监控指标、webhook 端点）
+9. ⏳ 配置 ShipStation Webhook
+
+**关键信息记录**：
+- Droplet IP: `143.198.110.147`
+- 数据库 Host: `central-db-do-user-31680664-0.d.db.ondigitalocean.com`
+- 数据库 Port: `25060`
+- 数据库名称: `defaultdb`
+- 数据库用户: `doadmin`
+- 应用目录: `/var/www/the-hub`
+
+**注意事项**：
+- 数据库密码已记录，后续配置 `.env` 文件时需要使用
+- Trusted Sources 已配置，Droplet 可以连接数据库
+- 服务器环境已准备就绪，等待代码上传
+
+---
+
+### 2026-01-24 - M0.1 部署辅助工具完成
+
+**任务**：创建部署辅助工具和验证脚本
+
+**完成内容**：
+1. ✅ **部署前检查清单**
+   - 创建 `deploy/pre-deployment-checklist.md`：部署前检查清单
+   - 包含前置要求、API 凭证准备、部署准备等检查项
+   - 提供部署后验证清单
+
+2. ✅ **环境变量验证脚本**
+   - 创建 `deploy/verify-env.sh`：自动验证环境变量配置
+   - 检查所有必需环境变量是否已设置
+   - 验证敏感信息格式（隐藏显示）
+   - 验证 WEBHOOK_BASE_URL 格式
+
+3. ✅ **部署验证脚本**
+   - 创建 `deploy/verify-deployment.sh`：自动验证部署状态
+   - 检查 PM2 服务状态
+   - 检查健康检查端点
+   - 检查监控指标端点
+   - 检查数据库连接
+   - 检查日志目录和构建文件
+   - 检查 Nginx 配置（如果使用）
+
+4. ✅ **快速部署脚本**
+   - 创建 `deploy/quick-deploy.sh`：一键部署脚本
+   - 自动执行：环境变量验证、安装依赖、构建、迁移、种子、启动服务
+   - 交互式确认关键步骤
+   - 自动配置 PM2 保存和开机自启
+
+5. ✅ **更新部署文档**
+   - 更新 `deploy/README.md`：添加新脚本的使用说明
+   - 提供快速部署和验证的简化流程
+
+**辅助工具功能**：
+- 部署前检查：确保所有前置条件已满足
+- 环境变量验证：自动检查必需配置是否完整
+- 部署验证：一键验证部署是否成功
+- 快速部署：简化部署流程，减少手动操作
+
+**下一步**：
+- 用户按照计划执行实际部署步骤
+- 使用辅助工具验证部署状态
+
+---
+
+### 2026-01-24 - M0.1 部署文档和配置完成
+
+**任务**：M0.1 部署到 DigitalOcean - 创建部署文档、配置文件和脚本
+
+**完成内容**：
+1. ✅ **PM2 配置文件**
+   - 创建 `ecosystem.config.js`：配置进程管理、日志、自动重启、优雅关闭等
+   - 支持单实例运行、日志文件管理、内存限制重启
+
+2. ✅ **部署文档**
+   - 创建 `deploy/digitalocean-deployment.md`：完整的 DigitalOcean 部署指南
+   - 包含 Managed PostgreSQL 创建、Droplet 配置、代码上传、环境变量配置等详细步骤
+   - 包含 Nginx 反向代理配置、SSL 证书配置、故障排查指南
+
+3. ✅ **服务器初始化脚本**
+   - 创建 `deploy/setup-server.sh`：自动化服务器初始化
+   - 自动安装 Node.js 20.x、PM2、PostgreSQL 客户端、Git、Nginx（可选）
+   - 配置防火墙规则、创建应用目录
+
+4. ✅ **环境变量模板**
+   - 创建 `deploy/env.production.template`：完整的生产环境变量配置模板
+   - 包含所有必需的环境变量：数据库、ShipStation、Amazon SP-API、Zoho、eBay、告警渠道等
+   - 提供详细的注释说明
+
+5. ✅ **Nginx 配置示例**
+   - 创建 `deploy/nginx.conf.example`：Nginx 反向代理配置示例
+   - 配置健康检查、监控指标、webhook 端点
+   - 支持原始请求体传递（用于 webhook 签名验证）
+   - 包含 SSL 配置说明
+
+6. ✅ **部署快速指南**
+   - 创建 `deploy/README.md`：部署快速开始指南
+   - 提供快速部署步骤和常用维护命令
+
+7. ✅ **更新主 README**
+   - 更新 `README.md` 中的部署部分
+   - 添加快速部署步骤、验证方法、环境变量说明
+
+**部署文档结构**：
+```
+deploy/
+├── digitalocean-deployment.md  # 完整部署指南
+├── env.production.template     # 环境变量模板
+├── setup-server.sh             # 服务器初始化脚本
+├── nginx.conf.example          # Nginx 配置示例
+└── README.md                   # 部署快速指南
+```
+
+**关键配置**：
+- PM2 配置：单实例、自动重启、日志管理、优雅关闭
+- 环境变量：完整的生产环境变量清单（数据库、API keys、webhook secrets）
+- Nginx 配置：反向代理、SSL 支持、webhook 原始请求体传递
+- 部署脚本：自动化服务器初始化流程
+
+**下一步**：
+- 实际部署到 DigitalOcean（需要用户执行）：
+  1. 创建 Managed PostgreSQL 数据库
+  2. 创建 Droplet 并运行初始化脚本
+  3. 上传代码并配置环境变量
+  4. 运行数据库迁移和种子
+  5. 使用 PM2 启动服务
+  6. 配置 Nginx 反向代理（可选）
+  7. 验证健康检查和监控指标端点可访问
+  8. 配置 ShipStation webhook URL
+
+**验收标准**：
+- ✅ PM2 配置文件已创建
+- ✅ 完整的部署文档已创建
+- ✅ 环境变量模板已创建
+- ✅ 服务器初始化脚本已创建
+- ✅ Nginx 配置示例已创建
+- ✅ 部署前检查清单已创建
+- ✅ 环境变量验证脚本已创建
+- ✅ 部署验证脚本已创建
+- ✅ 快速部署脚本已创建
+- ⏳ 实际部署到 DigitalOcean（待用户执行）
+- ⏳ 健康检查端点可访问（待验证）
+- ⏳ 监控指标端点可访问（待验证）
+- ⏳ Webhook 端点可访问（待验证）
+
+**部署工具清单**：
+```
+deploy/
+├── digitalocean-deployment.md  # 完整部署指南
+├── env.production.template     # 环境变量模板
+├── setup-server.sh             # 服务器初始化脚本
+├── nginx.conf.example          # Nginx 配置示例
+├── pre-deployment-checklist.md # 部署前检查清单
+├── verify-env.sh               # 环境变量验证脚本
+├── verify-deployment.sh        # 部署验证脚本
+├── quick-deploy.sh             # 快速部署脚本
+└── README.md                   # 部署快速指南
+```
+
+---
+
 ### 2026-01-24 - M0.1 测试评估与部署准备
 
 **任务**：评估测试结果，准备部署到 DigitalOcean

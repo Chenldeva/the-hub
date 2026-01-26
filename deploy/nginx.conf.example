@@ -1,0 +1,113 @@
+# The Hub - Nginx 反向代理配置示例
+# 
+# 使用方法：
+# 1. 复制此文件到 /etc/nginx/sites-available/the-hub
+# 2. 修改 server_name 和其他配置
+# 3. 创建软链接：ln -s /etc/nginx/sites-available/the-hub /etc/nginx/sites-enabled/
+# 4. 测试配置：nginx -t
+# 5. 重启 Nginx：systemctl restart nginx
+
+server {
+    listen 80;
+    server_name your-domain.com;  # 修改为你的域名或 IP 地址
+
+    # 日志配置
+    access_log /var/log/nginx/the-hub-access.log;
+    error_log /var/log/nginx/the-hub-error.log;
+
+    # 客户端最大请求体大小（用于 webhook）
+    client_max_body_size 10M;
+
+    # 反向代理到 Node.js 应用
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        
+        # WebSocket 支持（如果需要）
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        
+        # 标准代理头
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        
+        # Webhook 需要原始请求体用于签名验证
+        proxy_set_header Content-Length $content_length;
+        proxy_set_header Content-Type $content_type;
+        
+        # 超时设置
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # 健康检查端点（不记录访问日志）
+    location /health {
+        proxy_pass http://localhost:3000/health;
+        access_log off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 监控指标端点（不记录访问日志）
+    location /metrics {
+        proxy_pass http://localhost:3000/metrics;
+        access_log off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # JSON 格式监控指标
+    location /metrics/json {
+        proxy_pass http://localhost:3000/metrics/json;
+        access_log off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Webhook 端点（需要原始请求体）
+    location /webhooks/ {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        
+        # 保持原始请求体用于签名验证
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Content-Length $content_length;
+        proxy_set_header Content-Type $content_type;
+        
+        # 不缓冲请求体
+        proxy_request_buffering off;
+        
+        # 超时设置（webhook 可能需要更长时间）
+        proxy_connect_timeout 30s;
+        proxy_send_timeout 30s;
+        proxy_read_timeout 30s;
+    }
+}
+
+# SSL 配置（使用 Let's Encrypt 后，certbot 会自动添加）
+# server {
+#     listen 443 ssl http2;
+#     server_name your-domain.com;
+#     
+#     ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+#     
+#     # SSL 配置（使用 certbot 推荐的配置）
+#     include /etc/letsencrypt/options-ssl-nginx.conf;
+#     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+#     
+#     # 其他配置与 HTTP 相同...
+# }
