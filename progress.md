@@ -4,7 +4,115 @@
 
 ---
 
+## 📍 当前状态（2026-01-24）
+
+### 🎯 当前任务：M0.1 DigitalOcean 部署 - 数据库迁移和种子执行
+
+**当前阶段**：已完成代码修复，等待在服务器上重新部署
+
+**已完成**：
+- ✅ 创建 DigitalOcean Managed PostgreSQL 数据库
+- ✅ 创建 DigitalOcean Droplet
+- ✅ 配置服务器环境（Node.js, PM2, Git 等）
+- ✅ 上传代码到服务器（Git 克隆）
+- ✅ 配置环境变量（`.env` 文件）
+- ✅ 修改代码（SHIPSTATION_WEBHOOK_SECRET 改为可选）
+- ✅ 修复数据库 SSL 配置问题
+- ✅ 修复迁移和种子文件执行问题（TypeScript 支持）
+
+**当前问题**：
+- ❌ 数据库迁移失败（已修复 SSL 配置，待重新执行）
+- ❌ 种子文件执行失败（已修复 TypeScript 支持，待重新执行）
+
+**下一步操作**（在服务器上执行）：
+
+```bash
+# 1. 进入项目目录
+cd /var/www/the-hub
+
+# 2. 拉取最新代码（包含修复）
+git pull
+
+# 3. 重新运行数据库迁移
+npm run migrate
+
+# 4. 运行数据库种子
+npm run seed
+
+# 5. 如果迁移和种子都成功，启动服务
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+
+# 6. 检查服务状态
+pm2 status
+pm2 logs the-hub
+```
+
+**关键信息**：
+- **服务器 IP**: `143.198.110.147`
+- **服务器目录**: `/var/www/the-hub`
+- **数据库 Host**: `central-db-do-user-31680664-0.d.db.ondigitalocean.com`
+- **数据库 Port**: `25060`
+- **数据库名称**: `defaultdb`
+- **数据库用户**: `doadmin`
+- **数据库密码**: `AVNS__omlnJXyfrxllO9oZ1z`
+- **Git 仓库**: `https://github.com/Chenldeva/the-hub.git`
+
+**已修复的代码变更**：
+1. `knexfile.js` 和 `src/knexfile.ts`：添加了 SSL 配置支持 DigitalOcean Managed PostgreSQL
+2. `package.json`：修改 `migrate` 和 `seed` 脚本，使用 `NODE_OPTIONS='-r ts-node/register'` 支持 TypeScript
+3. `src/seeds/001_initial_configs.js`：创建了 JavaScript 版本的种子文件（备用）
+
+**待完成任务**：
+- ⏳ 在服务器上拉取最新代码并重新运行迁移和种子
+- ⏳ 使用 PM2 启动服务
+- ⏳ 配置 Nginx 反向代理（可选）
+- ⏳ 配置 SSL 证书（可选）
+- ⏳ 验证部署（健康检查、监控指标、webhook 端点）
+- ⏳ 配置 ShipStation Webhook
+
+---
+
 ## 更新日志
+
+### 2026-01-24 - 修复数据库迁移和种子执行问题
+
+**任务**：修复生产环境数据库迁移和种子文件执行错误
+
+**问题**：
+1. ❌ 数据库迁移失败：`no pg_hba.conf entry for host "143.198.110.147", user "doadmin", database "defaultdb", no encryption`
+   - 原因：DigitalOcean Managed PostgreSQL 要求 SSL 连接，但 Knex 配置中缺少 SSL 设置
+2. ❌ 种子文件执行失败：`Unexpected token ':' SyntaxError`
+   - 原因：Knex 在生产环境尝试直接执行 TypeScript 文件，但 Node.js 无法直接执行 TypeScript
+
+**修复内容**：
+1. ✅ **修复数据库 SSL 配置**
+   - 修改 `knexfile.js`：添加 SSL 配置，当连接到 DigitalOcean Managed PostgreSQL（host 包含 `ondigitalocean.com`）时自动启用 SSL
+   - 修改 `src/knexfile.ts`：同步添加 SSL 配置
+   - 使用 `ssl: { rejectUnauthorized: false }` 以兼容 Managed PostgreSQL 的 SSL 证书
+
+2. ✅ **修复迁移和种子文件执行**
+   - 修改 `package.json` 中的 `migrate` 和 `seed` 脚本
+   - 使用 `NODE_OPTIONS='-r ts-node/register'` 来注册 TypeScript 支持
+   - 这样 Knex 在执行迁移和种子文件时能够正确处理 TypeScript 文件
+
+3. ✅ **创建 JavaScript 版本的种子文件（备用）**
+   - 创建 `src/seeds/001_initial_configs.js` 作为备用方案
+   - 如果 TypeScript 版本仍有问题，可以使用 JavaScript 版本
+
+**技术细节**：
+- SSL 配置：`ssl: process.env.DB_HOST && process.env.DB_HOST.includes('ondigitalocean.com') ? { rejectUnauthorized: false } : false`
+- 迁移脚本：`NODE_OPTIONS='-r ts-node/register' knex migrate:latest`
+- 种子脚本：`NODE_OPTIONS='-r ts-node/register' knex seed:run`
+
+**下一步**：
+1. 在服务器上拉取最新代码：`cd /var/www/the-hub && git pull`
+2. 重新运行迁移：`npm run migrate`（现在应该可以成功）
+3. 运行种子：`npm run seed`（现在应该可以成功）
+4. 启动服务：`pm2 start ecosystem.config.js`
+
+---
 
 ### 2026-01-24 - M0.1 DigitalOcean 部署进行中
 
