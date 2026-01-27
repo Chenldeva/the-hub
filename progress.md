@@ -47,19 +47,21 @@
    - 应用目录已创建：`/var/www/the-hub`
 
 **当前进度**：
-- 阶段：准备上传代码到服务器
-- 下一步：上传代码到 `/var/www/the-hub`
+- 阶段：代码已上传，环境变量已配置，准备构建和部署
+- 下一步：安装依赖、构建项目、运行迁移、启动服务
 
 **待完成步骤**：
-1. ⏳ 上传代码到服务器（使用 rsync 或 SCP）
-2. ⏳ 配置环境变量（创建 `.env` 文件，填写数据库连接、API keys 等）
-3. ⏳ 安装依赖并构建项目（`npm install`, `npm run build`）
-4. ⏳ 运行数据库迁移和种子（`npm run migrate`, `npm run seed`）
-5. ⏳ 使用 PM2 启动服务
-6. ⏳ 配置 Nginx 反向代理（可选）
-7. ⏳ 配置 SSL 证书（可选）
-8. ⏳ 验证部署（健康检查、监控指标、webhook 端点）
-9. ⏳ 配置 ShipStation Webhook
+1. ✅ 上传代码到服务器（使用 Git 克隆）
+2. ✅ 配置环境变量（创建 `.env` 文件，填写数据库连接、ShipStation API keys）
+3. ✅ 修改代码（让 SHIPSTATION_WEBHOOK_SECRET 变为可选）
+4. ⏳ 在服务器上拉取最新代码
+5. ⏳ 安装依赖并构建项目（`npm install`, `npm run build`）
+6. ⏳ 运行数据库迁移和种子（`npm run migrate`, `npm run seed`）
+7. ⏳ 使用 PM2 启动服务
+8. ⏳ 配置 Nginx 反向代理（可选）
+9. ⏳ 配置 SSL 证书（可选）
+10. ⏳ 验证部署（健康检查、监控指标、webhook 端点）
+11. ⏳ 配置 ShipStation Webhook
 
 **关键信息记录**：
 - Droplet IP: `143.198.110.147`

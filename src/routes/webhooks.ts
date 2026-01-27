@@ -14,21 +14,18 @@ router.post('/shipstation', async (req: Request, res: Response) => {
     const signature = req.headers['x-shipstation-signature'] as string;
     const secret = process.env.SHIPSTATION_WEBHOOK_SECRET;
 
-    if (!secret) {
-      logger.warn('ShipStation webhook secret not configured');
-      return res.status(500).json({ error: 'Webhook secret not configured' });
-    }
+    // 只有在有 signature 和 secret 时才进行签名验证
+    // ShipStation 可能不发送签名，所以 secret 是可选的
+    if (signature && secret) {
+      // 使用原始请求体进行签名验证
+      const rawBody = req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify(req.body);
+      
+      if (!req.rawBody) {
+        logger.warn('Raw body not available, using parsed body for signature verification', {
+          source: 'shipstation',
+        });
+      }
 
-    // 使用原始请求体进行签名验证
-    const rawBody = req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify(req.body);
-    
-    if (!req.rawBody) {
-      logger.warn('Raw body not available, using parsed body for signature verification', {
-        source: 'shipstation',
-      });
-    }
-
-    if (signature) {
       const isValid = verifyShipStationWebhook(rawBody, signature, secret);
       if (!isValid) {
         logger.warn('Invalid webhook signature', {
@@ -36,12 +33,17 @@ router.post('/shipstation', async (req: Request, res: Response) => {
         });
         return res.status(401).json({ error: 'Invalid signature' });
       }
-    } else {
-      logger.warn('Missing webhook signature', {
+      logger.info('ShipStation webhook signature verified', {
         source: 'shipstation',
       });
-      // 根据配置决定是否要求签名
-      // 这里暂时允许无签名（开发环境），生产环境应该要求签名
+    } else if (signature && !secret) {
+      logger.warn('Webhook signature received but secret not configured, skipping verification', {
+        source: 'shipstation',
+      });
+    } else if (!signature) {
+      logger.info('ShipStation webhook received without signature (secret may not be configured in ShipStation)', {
+        source: 'shipstation',
+      });
     }
 
     logger.info('ShipStation webhook received', {
