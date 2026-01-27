@@ -33,6 +33,7 @@ const config: { [key: string]: Knex.Config } = {
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      ssl: process.env.DB_HOST && process.env.DB_HOST.includes('ondigitalocean.com') ? { rejectUnauthorized: false } : false,
     },
     pool: {
       min: 2,
