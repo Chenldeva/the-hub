@@ -20,16 +20,26 @@ The Hub 是一个集成服务器，用于管理多个 marketplace（Amazon、eBa
 
 ```
 /src
-  /connectors      # 外部系统连接器（Amazon, ShipStation, Zoho, etc.）
-  /orchestrators   # 业务编排层（订单、库存、tracking）
-  /services        # 业务服务层（配置管理、影子库存、对账）
-  /models          # 数据模型（NormalizedOrder, InventorySnapshot, etc.）
-  /config          # 配置管理（环境变量、配置加载）
-  /utils           # 工具函数（加密、日志、重试）
+  /config          # 数据库配置
+  /middleware      # 中间件（raw body 等）
   /migrations      # 数据库迁移（Knex migrations）
-  /seeds           # 初始化数据（Knex seeds）
   /routes          # Express 路由（webhooks, health, metrics）
+  /scripts         # 测试与脚本
+  /seeds           # 初始化数据（Knex seeds）
+  /services        # 服务层（配置、调度、清理）
+  /utils           # 工具函数（日志、重试、签名）
+  index.ts         # 应用入口
+  knexfile.ts      # Knex 配置（TS）
 ```
+
+## 文档索引
+
+- 文档总览：`docs/index/INDEX.md`
+- 规格与流程：`docs/guides/integration-server-spec.md`
+- 授权模型：`docs/guides/integration-server-auth-and-process.md`
+- 接口契约：`docs/guides/api-contracts.md`
+- 工程冻结清单：`docs/guides/frozen-engineering-facts.md`
+- 测试报告：`docs/reports/test-server.md`
 
 ## 快速开始
 

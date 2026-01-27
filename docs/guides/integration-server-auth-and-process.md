@@ -184,5 +184,5 @@ Cursor 在 plan 阶段必须拆成：
 ---
 
 ### 结束说明
-本文件可直接作为 `integration-server-auth-and-process.md` 使用，与主规格文档配套。  
+本文件可直接作为 `docs/guides/integration-server-auth-and-process.md` 使用，与主规格文档配套。  
 如果你愿意，下一步我可以帮你把“对外授权邮件模板 / 表单模板”也一起整理好，直接给 marketplace 管理员用。

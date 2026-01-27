@@ -1,0 +1,22 @@
+{
+  "updated_at": "2026-01-27",
+  "guides": [
+    "docs/guides/startup-checklist.md",
+    "docs/guides/integration-server-spec.md",
+    "docs/guides/integration-server-auth-and-process.md",
+    "docs/guides/api-contracts.md",
+    "docs/guides/frozen-engineering-facts.md"
+  ],
+  "reports": [
+    "docs/reports/test-server.md"
+  ],
+  "deploy": [
+    "deploy/README.md",
+    "deploy/digitalocean-deployment.md",
+    "deploy/pre-deployment-checklist.md"
+  ],
+  "progress": [
+    "progress.md",
+    "docs/progress/README.md"
+  ]
+}

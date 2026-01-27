@@ -76,6 +76,31 @@ pm2 logs the-hub
 
 ## 更新日志
 
+### 2026-01-27 - 补齐文档结构与目录归档
+
+**任务**：补齐 startup 结构要求并整理文档目录
+
+**完成内容**：
+1. ✅ 创建 `docs/index/INDEX.md` 与 `docs/index/INDEX.json` 作为文档索引
+2. ✅ 将根目录文档归档到 `docs/guides/` 与 `docs/reports/`
+3. ✅ 创建 `docs/progress/README.md` 补齐结构并说明进度规则
+4. ✅ 创建 `ops/servers/README.md` 明确唯一 server 入口
+5. ✅ 更新 `README.md` 的项目结构与文档路径
+
+**说明**：
+- 进度记录仍集中在根目录 `progress.md`，遵循项目规则
+
+### 2026-01-27 - 读取启动指令并整理任务文件夹结构
+
+**任务**：读取 `STARTUP_CHECKLIST.md` 并整理当前任务文件夹结构
+
+**完成内容**：
+1. ✅ 已读取 `STARTUP_CHECKLIST.md` 的启动自查指令
+2. ✅ 已整理当前仓库顶层与核心目录结构（输出于本次任务回复）
+
+**备注**：
+- 当前仓库未发现 `docs/` 目录（包含 `docs/index/INDEX.md` 与 `INDEX.json`），后续若需执行启动指令第 1 条可按规则补充
+
 ### 2026-01-24 - 修复数据库迁移和种子执行问题
 
 **任务**：修复生产环境数据库迁移和种子文件执行错误
