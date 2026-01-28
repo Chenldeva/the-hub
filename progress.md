@@ -25,6 +25,8 @@
 - ✅ 验证服务正常运行（健康检查端点正常）
 - ✅ 配置 Nginx 反向代理
 - ✅ 配置防火墙（已启用）
+- ✅ 修复 webhook GET 端点问题
+- ✅ ShipStation webhook 端点验证通过（浏览器访问成功）
 
 **部署状态**：✅ **部署成功！所有端点验证通过！**
 
@@ -80,8 +82,8 @@ curl http://localhost:3000/
 4. `deploy/redeploy.sh`：创建了自动化重新部署脚本，一键执行所有部署步骤
 
 **待完成任务**：
-- ⏳ 配置 SSL 证书（可选，需要域名）
-- ⏳ 配置 ShipStation Webhook（在 ShipStation 后台配置）
+- ⏳ 配置 SSL 证书（可选，需要域名，ShipStation 可能需要 HTTPS）
+- ⏳ 在 ShipStation 后台正式配置 webhook（当前端点已验证可用）
 
 **Nginx 配置信息**：
 - 配置文件：`/etc/nginx/sites-available/the-hub`
