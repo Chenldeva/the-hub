@@ -6,9 +6,9 @@
 
 ## 📍 当前状态（2026-01-28）
 
-### 🎯 当前任务：M0.1 DigitalOcean 部署 - 部署验证和后续配置
+### 🎯 当前任务：M0.1 DigitalOcean 部署 - 完成
 
-**当前阶段**：✅ 部署成功，服务正常运行
+**当前阶段**：✅ **M0.1 部署任务全部完成！**
 
 **已完成**：
 - ✅ 创建 DigitalOcean Managed PostgreSQL 数据库
@@ -27,6 +27,11 @@
 - ✅ 配置防火墙（已启用）
 - ✅ 修复 webhook GET 端点问题
 - ✅ ShipStation webhook 端点验证通过（浏览器访问成功）
+- ✅ 配置 SSL 证书（Let's Encrypt）
+- ✅ 配置 HTTPS 支持
+- ✅ 修复 Nginx 配置冲突
+- ✅ HTTPS 端点验证通过
+- ✅ 在 ShipStation 后台成功配置 webhook
 - ✅ 配置 SSL 证书（Let's Encrypt）
 - ✅ 配置 HTTPS 支持
 - ✅ 修复 Nginx 配置冲突
@@ -85,10 +90,18 @@ curl http://localhost:3000/
 3. `src/seeds/001_initial_configs.js`：创建了 JavaScript 版本的种子文件（备用）
 4. `deploy/redeploy.sh`：创建了自动化重新部署脚本，一键执行所有部署步骤
 
-**待完成任务**：
-- ✅ 配置 SSL 证书（已完成）
-- ✅ HTTPS 支持（已完成）
-- ⏳ 在 ShipStation 后台正式配置 webhook（端点已验证可用，可以使用 HTTPS URL）
+**M0.1 部署任务状态**：✅ **全部完成！**
+
+**已完成的所有任务**：
+- ✅ 配置 SSL 证书（Let's Encrypt）
+- ✅ HTTPS 支持（HTTP 自动重定向）
+- ✅ 在 ShipStation 后台成功配置 webhook
+
+**下一步任务（M1 阶段）**：
+- ⏳ 实现订单处理逻辑（从 marketplace 拉取订单）
+- ⏳ 实现 ShipStation 订单创建
+- ⏳ 实现 tracking 回传逻辑
+- ⏳ 实现库存同步逻辑
 
 **SSL 配置信息**：
 - 域名：`hub.hauteedition.com`
@@ -104,9 +117,11 @@ curl http://localhost:3000/
 - SSL 证书：`/etc/letsencrypt/live/hub.hauteedition.com/`
 - 状态：✅ 已启用并运行
 
-**ShipStation Webhook URL**：
+**ShipStation Webhook 配置**：
 - HTTPS URL：`https://hub.hauteedition.com/webhooks/shipstation`
-- 状态：✅ 端点已验证可用
+- 状态：✅ 已在 ShipStation 后台成功配置
+- 事件：Order Shipped（订单已发货）
+- 验证：端点已验证可用，等待测试订单触发
 
 ---
 
