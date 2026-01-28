@@ -4,11 +4,11 @@
 
 ---
 
-## 📍 当前状态（2026-01-24）
+## 📍 当前状态（2026-01-28）
 
-### 🎯 当前任务：M0.1 DigitalOcean 部署 - 数据库迁移和种子执行
+### 🎯 当前任务：M0.1 DigitalOcean 部署 - 部署验证和后续配置
 
-**当前阶段**：已完成代码修复，等待在服务器上重新部署
+**当前阶段**：✅ 部署成功，服务正常运行
 
 **已完成**：
 - ✅ 创建 DigitalOcean Managed PostgreSQL 数据库
@@ -19,58 +19,44 @@
 - ✅ 修改代码（SHIPSTATION_WEBHOOK_SECRET 改为可选）
 - ✅ 修复数据库 SSL 配置问题
 - ✅ 修复迁移和种子文件执行问题（TypeScript 支持）
+- ✅ 运行数据库迁移和种子
+- ✅ 启动 PM2 服务并配置开机自启
+- ✅ 修复健康检查路由问题
+- ✅ 验证服务正常运行（健康检查端点正常）
 
-**当前问题**：
-- ❌ 数据库迁移失败（已修复 SSL 配置，待重新执行）
-- ❌ 种子文件执行失败（已修复 TypeScript 支持，待重新执行）
+**部署状态**：✅ **部署成功！**
 
-**下一步操作**（在服务器上执行）：
+**验证结果**：
+- ✅ 健康检查端点正常：`GET /health` 返回 `{"status":"healthy",...}`
+- ✅ 数据库连接正常
+- ✅ 任务调度器运行正常
+- ✅ PM2 服务运行正常
+- ✅ 开机自启已配置
 
-**方法 1：使用自动化脚本（推荐）**
+**下一步操作**：
 
+1. **验证其他端点**（在服务器上执行）：
 ```bash
-# 1. 进入项目目录
-cd /var/www/the-hub
+# 测试监控指标端点
+curl http://localhost:3000/health/metrics
+curl http://localhost:3000/health/metrics/json
 
-# 2. 执行自动化重新部署脚本
-bash deploy/redeploy.sh
+# 测试根路径
+curl http://localhost:3000/
 ```
 
-这个脚本会自动执行：
-- 拉取最新代码
-- 检查并安装依赖（如果需要）
-- 构建项目
-- 创建日志目录
-- 运行数据库迁移
-- 运行数据库种子
-- 启动/重启 PM2 服务
-- 保存 PM2 配置
-- 设置开机自启
+2. **配置 Nginx 反向代理**（可选但推荐）：
+   - 提供更好的性能和安全性
+   - 支持 SSL/TLS
+   - 更好的日志管理
 
-**方法 2：手动执行**
+3. **配置 SSL 证书**（如果有域名）：
+   - 使用 Let's Encrypt 免费证书
+   - 配置 HTTPS
 
-```bash
-# 1. 进入项目目录
-cd /var/www/the-hub
-
-# 2. 拉取最新代码（包含修复）
-git pull
-
-# 3. 重新运行数据库迁移
-npm run migrate
-
-# 4. 运行数据库种子
-npm run seed
-
-# 5. 如果迁移和种子都成功，启动服务
-pm2 start ecosystem.config.js
-pm2 save
-pm2 startup
-
-# 6. 检查服务状态
-pm2 status
-pm2 logs the-hub
-```
+4. **配置 ShipStation Webhook**：
+   - 在 ShipStation 后台配置 webhook URL
+   - 测试 webhook 接收
 
 **关键信息**：
 - **服务器 IP**: `143.198.110.147`
@@ -89,12 +75,10 @@ pm2 logs the-hub
 4. `deploy/redeploy.sh`：创建了自动化重新部署脚本，一键执行所有部署步骤
 
 **待完成任务**：
-- ⏳ 在服务器上拉取最新代码并重新运行迁移和种子
-- ⏳ 使用 PM2 启动服务
-- ⏳ 配置 Nginx 反向代理（可选）
-- ⏳ 配置 SSL 证书（可选）
-- ⏳ 验证部署（健康检查、监控指标、webhook 端点）
-- ⏳ 配置 ShipStation Webhook
+- ⏳ 配置 Nginx 反向代理（可选但推荐）
+- ⏳ 配置 SSL 证书（可选，需要域名）
+- ⏳ 验证其他端点（/metrics, /metrics/json）
+- ⏳ 配置 ShipStation Webhook（在 ShipStation 后台配置）
 
 ---
 
