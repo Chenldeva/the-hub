@@ -5,6 +5,22 @@ import { verifyShipStationWebhook, verifyWebhookSignature } from '../utils/webho
 const router = Router();
 
 /**
+ * ShipStation webhook 验证端点（GET）
+ * ShipStation 在保存 webhook 时可能会发送 GET 请求来验证端点
+ */
+router.get('/shipstation', (req: Request, res: Response) => {
+  logger.info('ShipStation webhook verification request', {
+    source: 'shipstation',
+    method: 'GET',
+  });
+  res.status(200).json({ 
+    status: 'ok', 
+    message: 'ShipStation webhook endpoint is ready',
+    endpoint: '/webhooks/shipstation',
+  });
+});
+
+/**
  * ShipStation webhook 端点
  * 支持 HMAC-SHA256 签名验证
  * 使用原始请求体进行签名验证
