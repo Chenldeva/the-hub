@@ -14,12 +14,18 @@ declare global {
 /**
  * 创建用于 webhook 路由的中间件
  * 使用 express.raw() 保存原始请求体，然后手动解析 JSON
+ * GET 请求直接通过，不处理 body
  */
 export function webhookBodyParser() {
   // 使用 express.raw() 保存原始请求体
   const rawParser = express.raw({ type: 'application/json' });
   
   return (req: Request, res: Response, next: NextFunction): void => {
+    // GET 请求没有 body，直接通过
+    if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+      return next();
+    }
+    
     rawParser(req, res, (err) => {
       if (err) {
         logger.error('Error parsing raw body', {
