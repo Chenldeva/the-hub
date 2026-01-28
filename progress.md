@@ -26,6 +26,29 @@
 
 **下一步操作**（在服务器上执行）：
 
+**方法 1：使用自动化脚本（推荐）**
+
+```bash
+# 1. 进入项目目录
+cd /var/www/the-hub
+
+# 2. 执行自动化重新部署脚本
+bash deploy/redeploy.sh
+```
+
+这个脚本会自动执行：
+- 拉取最新代码
+- 检查并安装依赖（如果需要）
+- 构建项目
+- 创建日志目录
+- 运行数据库迁移
+- 运行数据库种子
+- 启动/重启 PM2 服务
+- 保存 PM2 配置
+- 设置开机自启
+
+**方法 2：手动执行**
+
 ```bash
 # 1. 进入项目目录
 cd /var/www/the-hub
@@ -63,6 +86,7 @@ pm2 logs the-hub
 1. `knexfile.js` 和 `src/knexfile.ts`：添加了 SSL 配置支持 DigitalOcean Managed PostgreSQL
 2. `package.json`：修改 `migrate` 和 `seed` 脚本，使用 `NODE_OPTIONS='-r ts-node/register'` 支持 TypeScript
 3. `src/seeds/001_initial_configs.js`：创建了 JavaScript 版本的种子文件（备用）
+4. `deploy/redeploy.sh`：创建了自动化重新部署脚本，一键执行所有部署步骤
 
 **待完成任务**：
 - ⏳ 在服务器上拉取最新代码并重新运行迁移和种子
