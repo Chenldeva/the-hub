@@ -21,7 +21,7 @@ const metrics: {
 /**
  * 健康检查端点
  */
-router.get('/health', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     // 检查数据库连接
     const db = getDb();
