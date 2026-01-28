@@ -24,10 +24,13 @@
 - ✅ 修复健康检查路由问题
 - ✅ 验证服务正常运行（健康检查端点正常）
 
-**部署状态**：✅ **部署成功！**
+**部署状态**：✅ **部署成功！所有端点验证通过！**
 
 **验证结果**：
 - ✅ 健康检查端点正常：`GET /health` 返回 `{"status":"healthy",...}`
+- ✅ Prometheus 监控指标端点正常：`GET /health/metrics` 返回 Prometheus 格式指标
+- ✅ JSON 监控指标端点正常：`GET /health/metrics/json` 返回 JSON 格式指标
+- ✅ 根路径正常：`GET /` 返回服务信息
 - ✅ 数据库连接正常
 - ✅ 任务调度器运行正常
 - ✅ PM2 服务运行正常
@@ -77,7 +80,6 @@ curl http://localhost:3000/
 **待完成任务**：
 - ⏳ 配置 Nginx 反向代理（可选但推荐）
 - ⏳ 配置 SSL 证书（可选，需要域名）
-- ⏳ 验证其他端点（/metrics, /metrics/json）
 - ⏳ 配置 ShipStation Webhook（在 ShipStation 后台配置）
 
 ---
