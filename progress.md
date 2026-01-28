@@ -27,6 +27,10 @@
 - ✅ 配置防火墙（已启用）
 - ✅ 修复 webhook GET 端点问题
 - ✅ ShipStation webhook 端点验证通过（浏览器访问成功）
+- ✅ 配置 SSL 证书（Let's Encrypt）
+- ✅ 配置 HTTPS 支持
+- ✅ 修复 Nginx 配置冲突
+- ✅ HTTPS 端点验证通过
 
 **部署状态**：✅ **部署成功！所有端点验证通过！**
 
@@ -82,14 +86,27 @@ curl http://localhost:3000/
 4. `deploy/redeploy.sh`：创建了自动化重新部署脚本，一键执行所有部署步骤
 
 **待完成任务**：
-- ⏳ 配置 SSL 证书（可选，需要域名，ShipStation 可能需要 HTTPS）
-- ⏳ 在 ShipStation 后台正式配置 webhook（当前端点已验证可用）
+- ✅ 配置 SSL 证书（已完成）
+- ✅ HTTPS 支持（已完成）
+- ⏳ 在 ShipStation 后台正式配置 webhook（端点已验证可用，可以使用 HTTPS URL）
+
+**SSL 配置信息**：
+- 域名：`hub.hauteedition.com`
+- SSL 证书：Let's Encrypt（自动续期已配置）
+- HTTP 自动重定向到 HTTPS：✅ 已配置
+- HTTPS 端点验证：✅ 全部通过
 
 **Nginx 配置信息**：
 - 配置文件：`/etc/nginx/sites-available/the-hub`
-- 服务器名称：`143.198.110.147`
-- HTTP 端口：80
+- 域名：`hub.hauteedition.com`
+- HTTP 端口：80（自动重定向到 HTTPS）
+- HTTPS 端口：443
+- SSL 证书：`/etc/letsencrypt/live/hub.hauteedition.com/`
 - 状态：✅ 已启用并运行
+
+**ShipStation Webhook URL**：
+- HTTPS URL：`https://hub.hauteedition.com/webhooks/shipstation`
+- 状态：✅ 端点已验证可用
 
 ---
 
